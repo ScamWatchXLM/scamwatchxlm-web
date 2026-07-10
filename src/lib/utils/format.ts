@@ -55,17 +55,28 @@ export function formatRelativeTime(iso: string): string {
   return rtf.format(0, "second")
 }
 
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
+
 /**
  * Intl.DateTimeFormat throws if `dateStyle`/`timeStyle` are mixed with
  * component options (`month`, `day`, etc.) in the same options object, so
  * callers passing custom `options` fully opt out of the default style —
  * they must specify every component they want.
+ *
+ * Date-only strings (`YYYY-MM-DD`) are parsed as UTC midnight per the ISO-8601
+ * spec, which rolls back to the previous calendar day once formatted in any
+ * timezone west of UTC. Since a date-only value has no time component to
+ * localize in the first place, parse it from its calendar components instead
+ * of letting `new Date(iso)` treat it as an instant.
  */
 export function formatDate(iso: string, options?: Intl.DateTimeFormatOptions): string {
+  const date = DATE_ONLY_PATTERN.test(iso)
+    ? new Date(`${iso}T00:00:00`)
+    : new Date(iso)
   return new Intl.DateTimeFormat(
     "en-US",
     options ?? { dateStyle: "medium", timeStyle: "short" }
-  ).format(new Date(iso))
+  ).format(date)
 }
 
 /** Shortens a Stellar public key / tx hash to `ABCD…WXYZ` form. */
