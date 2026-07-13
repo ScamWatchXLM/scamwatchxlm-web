@@ -3,6 +3,7 @@ import {
   formatCompactNumber,
   formatCurrency,
   formatPercent,
+  meetsMinimumSeverity,
   riskLevelFromScore,
   truncateMiddle,
 } from "@/lib/utils/format"
@@ -52,5 +53,21 @@ describe("formatCurrency", () => {
 describe("formatPercent", () => {
   it("formats a 0-100 value as a percentage", () => {
     expect(formatPercent(41.5)).toBe("41.5%")
+  })
+})
+
+describe("meetsMinimumSeverity", () => {
+  it("passes alerts at or above the minimum threshold", () => {
+    expect(meetsMinimumSeverity("critical", "high")).toBe(true)
+    expect(meetsMinimumSeverity("danger", "high")).toBe(true)
+  })
+
+  it("blocks alerts below the minimum threshold", () => {
+    expect(meetsMinimumSeverity("info", "high")).toBe(false)
+    expect(meetsMinimumSeverity("warning", "critical")).toBe(false)
+  })
+
+  it("treats 'low' as accepting every severity", () => {
+    expect(meetsMinimumSeverity("info", "low")).toBe(true)
   })
 })
