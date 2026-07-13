@@ -489,7 +489,7 @@ export function generateSeries(
   let value = rng.float(min, max)
   return Array.from({ length: points }, (_, i) => {
     value = Math.max(min, Math.min(max, value + rng.float(-max * 0.08, max * 0.08)))
-    const date = new Date(now - (points - i) * 24 * 60 * 60 * 1000)
+    const date = new Date(now - (points - 1 - i) * 24 * 60 * 60 * 1000)
     return { date: date.toISOString().slice(0, 10), value: Math.round(value) }
   })
 }
