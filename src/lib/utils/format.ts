@@ -1,4 +1,4 @@
-import type { RiskLevel } from "@/types/domain"
+import type { AlertSeverity, RiskLevel } from "@/types/domain"
 
 export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
   return new Intl.NumberFormat("en-US", options).format(value)
@@ -97,4 +97,26 @@ export const RISK_LEVEL_LABEL: Record<RiskLevel, string> = {
   medium: "Medium Risk",
   high: "High Risk",
   critical: "Critical Risk",
+}
+
+const RISK_LEVEL_RANK: Record<RiskLevel, number> = {
+  low: 0,
+  medium: 1,
+  high: 2,
+  critical: 3,
+}
+
+const ALERT_SEVERITY_RANK: Record<AlertSeverity, number> = {
+  info: 0,
+  warning: 1,
+  danger: 2,
+  critical: 3,
+}
+
+/** Whether an alert's severity is at or above a user's minimum severity preference. */
+export function meetsMinimumSeverity(
+  severity: AlertSeverity,
+  minimum: RiskLevel
+): boolean {
+  return ALERT_SEVERITY_RANK[severity] >= RISK_LEVEL_RANK[minimum]
 }

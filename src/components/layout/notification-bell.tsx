@@ -5,10 +5,15 @@ import { Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useLiveAlertStream } from "@/hooks/use-live-alert-stream"
+import { useSettingsStore } from "@/stores/settings-store"
+import { meetsMinimumSeverity } from "@/lib/utils/format"
 
 export function NotificationBell() {
   const { liveAlerts } = useLiveAlertStream()
-  const unacknowledged = liveAlerts.filter((a) => !a.acknowledged).length
+  const minimumAlertSeverity = useSettingsStore((s) => s.minimumAlertSeverity)
+  const unacknowledged = liveAlerts.filter(
+    (a) => !a.acknowledged && meetsMinimumSeverity(a.severity, minimumAlertSeverity)
+  ).length
 
   return (
     <Button
