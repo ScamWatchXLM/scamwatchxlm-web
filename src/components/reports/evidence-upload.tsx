@@ -59,7 +59,10 @@ export function EvidenceUpload({
           type="button"
           variant="outline"
           size="sm"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation()
+            inputRef.current?.click()
+          }}
         >
           Browse files
         </Button>
