@@ -2,7 +2,7 @@
 
 import { use } from "react"
 import Link from "next/link"
-import { ArrowUpRight, ImageOff, ThumbsUp } from "lucide-react"
+import { ArrowUpRight, ImageOff } from "lucide-react"
 import { PageHeader } from "@/components/shared/page-header"
 import { ReportStatusBadge } from "@/components/shared/report-status-badge"
 import { SeverityBadge } from "@/components/shared/severity-badge"
@@ -10,7 +10,7 @@ import { CopyableAddress } from "@/components/shared/copyable-address"
 import { DetailSkeleton } from "@/components/shared/loading-skeletons"
 import { ErrorState } from "@/components/shared/error-state"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { VoteButtons } from "@/components/reports/vote-buttons"
 import { useReport } from "@/hooks/use-reports"
 import { formatDate } from "@/lib/utils/format"
 
@@ -135,9 +135,7 @@ export default function ReportDetailPage({
             </CardContent>
           </Card>
 
-          <Button variant="outline" className="w-full">
-            <ThumbsUp className="size-4" /> Upvote ({report.upvotes})
-          </Button>
+          <VoteButtons report={report} />
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Plus } from "lucide-react"
+import { BadgeCheck, Plus } from "lucide-react"
 import { PageHeader } from "@/components/shared/page-header"
 import { FilterBar } from "@/components/shared/filter-bar"
 import { PaginationBar } from "@/components/shared/pagination-bar"
@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useReports } from "@/hooks/use-reports"
+import { getNetConfirmations, isCommunityVerified } from "@/lib/reports"
 import { formatRelativeTime } from "@/lib/utils/format"
 import type { ReportStatus, ScamReport } from "@/types/domain"
 
@@ -57,6 +58,18 @@ export default function ReportsPage() {
       render: (r) => <SeverityBadge severity={r.severity} />,
     },
     { key: "reporter", header: "Reporter", render: (r) => r.reporterHandle },
+    {
+      key: "votes",
+      header: "Votes",
+      render: (r) => (
+        <span className="inline-flex items-center gap-1 tabular-nums">
+          {getNetConfirmations(r)}
+          {isCommunityVerified(r) && (
+            <BadgeCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+          )}
+        </span>
+      ),
+    },
     { key: "created", header: "Filed", render: (r) => formatRelativeTime(r.createdAt) },
     {
       key: "status",

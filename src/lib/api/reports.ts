@@ -8,6 +8,7 @@ import type {
   Paginated,
   ReportCategory,
   ReportStatus,
+  ReportVote,
   ScamReport,
 } from "@/types/domain"
 
@@ -114,12 +115,42 @@ export async function submitReport(input: SubmitReportInput): Promise<ScamReport
       updatedAt: now,
       evidenceUrls: input.evidenceUrls,
       upvotes: 0,
+      downvotes: 0,
     }
     mockReports.unshift(report)
     return report
   }
 
   return apiFetch<ScamReport>("/reports", { method: "POST", body: input })
+}
+
+/**
+ * Casts (or changes/retracts) the current browser's vote on a report.
+ * `previousVote` is passed in by the caller — read from the client-side
+ * vote store — so the mock layer can move the right counters rather than
+ * just incrementing blindly.
+ */
+export async function castReportVote(
+  id: string,
+  vote: ReportVote | null,
+  previousVote: ReportVote | null
+): Promise<ScamReport> {
+  if (isMockMode) {
+    await mockDelay(200)
+    const report = mockReports.find((r) => r.id === id)
+    if (!report) throw new Error("Report not found")
+    if (previousVote === "confirm") report.upvotes = Math.max(0, report.upvotes - 1)
+    if (previousVote === "dispute") report.downvotes = Math.max(0, report.downvotes - 1)
+    if (vote === "confirm") report.upvotes += 1
+    if (vote === "dispute") report.downvotes += 1
+    report.updatedAt = new Date().toISOString()
+    return report
+  }
+
+  return apiFetch<ScamReport>(`/reports/${id}/vote`, {
+    method: "POST",
+    body: { vote },
+  })
 }
 
 export async function updateReportStatus(

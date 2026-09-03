@@ -330,6 +330,7 @@ export function generateReport(seed: string): ScamReport {
       ? [`https://evidence.scamwatchxlm.org/${shortId(seed)}.png`]
       : [],
     upvotes: rng.int(0, 340),
+    downvotes: rng.int(0, 40),
     reviewerNote:
       status !== "pending"
         ? "Reviewed against on-chain signals and community evidence."
