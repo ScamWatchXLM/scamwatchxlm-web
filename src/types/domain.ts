@@ -122,8 +122,12 @@ export interface ScamReport {
   updatedAt: string
   evidenceUrls: string[]
   upvotes: number
+  downvotes: number
   reviewerNote?: string
 }
+
+/** A community member's vote on whether a report is accurate. */
+export type ReportVote = "confirm" | "dispute"
 
 export interface Alert {
   id: string
