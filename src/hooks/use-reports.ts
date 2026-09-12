@@ -142,8 +142,10 @@ export function useCastReportVote() {
       setVote(id, context?.previousVote ?? null)
       toast.error("Failed to record your vote")
     },
-    onSettled: (_data, _err, { id }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.reports.detail(id) })
+    onSettled: () => {
+      // Broad invalidation: a vote changes both this report's detail view and
+      // its row in the reports list (Votes column, verified badge).
+      queryClient.invalidateQueries({ queryKey: queryKeys.reports.all })
     },
   })
 }

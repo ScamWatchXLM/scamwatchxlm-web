@@ -26,7 +26,7 @@ export function EvidenceUpload({
   function handleFiles(files: FileList | null) {
     if (!files) return
     const names = Array.from(files).map((f) => f.name)
-    const next = [...fileNames, ...names].slice(0, maxFiles)
+    const next = Array.from(new Set([...fileNames, ...names])).slice(0, maxFiles)
     onChange(next)
   }
 
@@ -72,7 +72,10 @@ export function EvidenceUpload({
           multiple
           accept="image/*,.pdf"
           className="hidden"
-          onChange={(e) => handleFiles(e.target.files)}
+          onChange={(e) => {
+            handleFiles(e.target.files)
+            e.target.value = ""
+          }}
         />
       </div>
 
