@@ -144,6 +144,7 @@ export function useCastReportVote() {
     },
     onSettled: (_data, _err, { id }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.reports.detail(id) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.reports.all })
     },
   })
 }
