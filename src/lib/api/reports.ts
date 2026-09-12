@@ -67,12 +67,19 @@ export async function getRelatedReports(
     const count = rng.int(0, 3)
     return Array.from({ length: count }, (_, i) => {
       const report = generateReport(`related-${entityId}-${i}`)
-      return {
+      const relatedReport: ScamReport = {
         ...report,
         targetKind: entityKind,
         targetId: entityId,
         targetLabel: entityLabel,
       }
+      // Register so a later getReport(id) lookup (e.g. clicking through to
+      // the detail page) can find this exact report instead of falling
+      // through to an unrelated one.
+      if (!mockReports.some((r) => r.id === relatedReport.id)) {
+        mockReports.push(relatedReport)
+      }
+      return relatedReport
     })
   }
   return apiFetch<ScamReport[]>("/reports", { params: { targetId: entityId } })
@@ -81,7 +88,7 @@ export async function getRelatedReports(
 export async function getReport(id: string): Promise<ScamReport | undefined> {
   if (isMockMode) {
     await mockDelay()
-    return mockReports.find((r) => r.id === id) ?? mockReports[0]
+    return mockReports.find((r) => r.id === id)
   }
   return apiFetch<ScamReport>(`/reports/${id}`)
 }
