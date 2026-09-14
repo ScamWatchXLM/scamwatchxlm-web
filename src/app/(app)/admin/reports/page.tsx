@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Check, X } from "lucide-react"
+import { BadgeCheck, Check, X } from "lucide-react"
 import { PageHeader } from "@/components/shared/page-header"
 import { PaginationBar } from "@/components/shared/pagination-bar"
 import { SeverityBadge } from "@/components/shared/severity-badge"
@@ -11,6 +11,7 @@ import { DataTable, type DataTableColumn } from "@/components/tables/data-table"
 import { Button } from "@/components/ui/button"
 import { useAdminReportsQueue } from "@/hooks/use-admin"
 import { useUpdateReportStatus } from "@/hooks/use-reports"
+import { getNetConfirmations, isCommunityVerified } from "@/lib/reports"
 import { formatRelativeTime } from "@/lib/utils/format"
 import type { ScamReport } from "@/types/domain"
 
@@ -48,6 +49,18 @@ export default function AdminReportsPage() {
       render: (r) => <SeverityBadge severity={r.severity} />,
     },
     { key: "reporter", header: "Reporter", render: (r) => r.reporterHandle },
+    {
+      key: "votes",
+      header: "Votes",
+      render: (r) => (
+        <span className="inline-flex items-center gap-1 tabular-nums">
+          {getNetConfirmations(r)}
+          {isCommunityVerified(r) && (
+            <BadgeCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+          )}
+        </span>
+      ),
+    },
     { key: "filed", header: "Filed", render: (r) => formatRelativeTime(r.createdAt) },
     {
       key: "actions",
@@ -78,7 +91,7 @@ export default function AdminReportsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Manage Reports"
-        description="Review and act on pending community-submitted reports."
+        description="Review and act on pending reports, sorted by strength of community consensus."
       />
 
       <DataTable

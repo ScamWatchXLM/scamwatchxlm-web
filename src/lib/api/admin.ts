@@ -2,6 +2,7 @@ import { apiFetch, mockDelay } from "./client"
 import { isMockMode } from "@/config/env"
 import { mockAdminLogs, mockAdminUsers, mockReports } from "@/mocks/db"
 import { generateNetworkStats, paginate } from "@/mocks/generators"
+import { getNetConfirmations } from "@/lib/reports"
 import type {
   AdminLogEntry,
   AdminUser,
@@ -38,7 +39,12 @@ export async function getAdminReportsQueue(
   const { page = 1, pageSize = 15 } = params
   if (isMockMode) {
     await mockDelay()
-    const pending = mockReports.filter((r) => r.status === "pending")
+    // Surface the reports with the clearest community signal — strongly
+    // confirmed or strongly disputed — first, so moderators triage the
+    // easiest calls before the ambiguous, low-vote ones.
+    const pending = mockReports
+      .filter((r) => r.status === "pending")
+      .sort((a, b) => Math.abs(getNetConfirmations(b)) - Math.abs(getNetConfirmations(a)))
     return paginate(pending, page, pageSize)
   }
   return apiFetch<Paginated<ScamReport>>("/admin/reports/queue", {

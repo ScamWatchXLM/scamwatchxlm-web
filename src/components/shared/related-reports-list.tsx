@@ -1,8 +1,10 @@
 import Link from "next/link"
+import { BadgeCheck } from "lucide-react"
 import { EmptyState } from "@/components/shared/empty-state"
 import { ErrorState } from "@/components/shared/error-state"
 import { ReportStatusBadge } from "@/components/shared/report-status-badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { getNetConfirmations, isCommunityVerified } from "@/lib/reports"
 import { formatRelativeTime } from "@/lib/utils/format"
 import type { ScamReport } from "@/types/domain"
 
@@ -53,7 +55,15 @@ export function RelatedReportsList({
               {report.reporterHandle} · {formatRelativeTime(report.createdAt)}
             </p>
           </div>
-          <ReportStatusBadge status={report.status} />
+          <div className="flex shrink-0 items-center gap-2">
+            {isCommunityVerified(report) && (
+              <BadgeCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+            )}
+            <span className="text-muted-foreground text-xs tabular-nums">
+              {getNetConfirmations(report)}
+            </span>
+            <ReportStatusBadge status={report.status} />
+          </div>
         </Link>
       ))}
     </div>
